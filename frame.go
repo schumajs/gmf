@@ -159,6 +159,10 @@ func (this *Frame) SetHeight(val int) *Frame {
 	return this
 }
 
+func (this *Frame) MediaType() int32 {
+	return this.mediaType
+}
+
 func (this *Frame) ImgAlloc() error {
 	if ret := int(C.av_image_alloc(
 		(**C.uint8_t)(unsafe.Pointer(&this.avFrame.data)),
