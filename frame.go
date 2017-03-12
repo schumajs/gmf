@@ -228,7 +228,7 @@ func (this *Frame) LineSize(idx int) int {
 }
 
 func (this *Frame) CloneNewFrame() *Frame {
-	return &Frame{avFrame: C.av_frame_clone(this.avFrame)}
+	return &Frame{avFrame: C.av_frame_clone(this.avFrame), mediaType: this.mediaType}
 }
 
 func (this *Frame) Free() {
