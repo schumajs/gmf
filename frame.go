@@ -8,6 +8,13 @@ package gmf
 #include "libavutil/frame.h"
 #include "libavutil/imgutils.h"
 
+uint8_t *gmf_get_frame_data(AVFrame *frame, int idx, int l_size) {
+    if(!frame) {
+        fprintf(stderr, "frame is NULL\n");
+    }
+    return &frame->data[idx][l_size];
+}
+
 void gmf_set_frame_data(AVFrame *frame, int idx, int l_size, uint8_t data) {
     if(!frame) {
         fprintf(stderr, "frame is NULL\n");
@@ -201,7 +208,16 @@ func NewAudioFrame(sampleFormat int32, channels, nb_samples int) (*Frame, error)
 	}
 	return this, nil
 }
-func (this *Frame) SetData(idx int, lineSize int, data int) *Frame {
+
+func (this *Frame) Data(idx int, lineSize int) uint8 {
+	return *(*uint8)(C.gmf_get_frame_data(this.avFrame, C.int(idx), C.int(lineSize)))
+}
+
+func (this *Frame) DataPtr(idx int) unsafe.Pointer {
+	return unsafe.Pointer(this.avFrame.data[idx])
+}
+
+func (this *Frame) SetData(idx int, lineSize int, data uint8) *Frame {
 	C.gmf_set_frame_data(this.avFrame, C.int(idx), C.int(lineSize), (_Ctype_uint8_t)(data))
 
 	return this
