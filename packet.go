@@ -216,7 +216,13 @@ func (this *Packet) Clone() *Packet {
 }
 
 func (this *Packet) CloneNewPacket() *Packet {
-	return &Packet{avPacket: *C.av_packet_clone(&this.avPacket)}
+	temp := C.av_packet_clone(&this.avPacket)
+
+	avPacket := *temp
+
+	C.av_free(unsafe.Pointer(temp))
+
+	return &Packet{avPacket: avPacket}
 }
 
 func (this *Packet) Dump() {
