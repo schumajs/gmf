@@ -10,6 +10,23 @@ package gmf
 #include <libavdevice/avdevice.h>
 #include "libavutil/opt.h"
 
+extern void call_log_callback(int level, char *msg);
+
+static void gmf_log_callback(void* callback, int level, const char *fmt, va_list a1) {
+    va_list a2;
+    va_copy(a2, a1);
+    size_t length = (size_t)vsnprintf(0, 0, fmt, a1);
+    char *str = (char *)malloc(length + 1);
+    vsprintf(str, fmt, a2);
+    va_end(a2);
+    call_log_callback(level, str);
+    free(str);
+}
+
+static void gmf_log_set_callback() {
+    av_log_set_callback(gmf_log_callback);
+}
+
 static AVStream* gmf_get_stream(AVFormatContext *ctx, int idx) {
 	return ctx->streams[idx];
 }
@@ -87,6 +104,21 @@ func init() {
 
 func LogSetLevel(level int) {
 	C.av_log_set_level(C.int(level))
+}
+
+type LogCallback func(level int, msg string)
+
+func LogSetCallback(lb LogCallback) {
+	logCallback = lb
+
+	C.gmf_log_set_callback()
+}
+
+var logCallback LogCallback
+
+//export call_log_callback
+func call_log_callback(level C.int, msg *C.char) {
+	logCallback(int(level), C.GoString(msg))
 }
 
 // @todo return error if avCtx is null
