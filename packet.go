@@ -148,7 +148,11 @@ func (this *Packet) Frames(cc *CodecCtx) chan *Frame {
 			}
 
 			if ret < 0 || err != nil {
-				fmt.Println("Decoding error:", err)
+				if logCallback != nil {
+					logCallback(AV_LOG_ERROR, fmt.Sprintf("Decoding error: %v", err))
+				} else {
+					fmt.Println("Decoding error:", err)
+				}
 				break
 			}
 
