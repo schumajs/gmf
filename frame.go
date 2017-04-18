@@ -127,8 +127,8 @@ func (this *Frame) SetPktDts(val int) {
 	this.avFrame.pkt_dts = (_Ctype_int64_t)(val)
 }
 
-func (this *Frame) TimeStamp() int {
-	return int(C.av_frame_get_best_effort_timestamp(this.avFrame))
+func (this *Frame) TimeStamp() int64 {
+	return int64(C.av_frame_get_best_effort_timestamp(this.avFrame))
 }
 
 func (this *Frame) PktPos() int {
